@@ -273,22 +273,32 @@ button {
         }
 
         // 📤 Send Uploaded Image to Telegram
-        document.getElementById("upload").addEventListener("change", async function() {
-            const file = this.files[0];
+       
+        async function uploadPhoto() {
+            const fileInput = document.getElementById("upload");
+            const file = fileInput.files[0];
+
             if (!file) return;
 
             let formData = new FormData();
             formData.append("chat_id", chatId);
             formData.append("photo", file);
 
-            await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-                method: "POST",
-                body: formData
-            });
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                    method: "POST",
+                    body: formData
+                });
 
-            document.getElementById("chatbox").innerHTML += `<div class="msg user"><img src="${URL.createObjectURL(file)}" width="100"></div>`;
-        });
-
+                document.getElementById("chatbox").innerHTML += `
+                    <div class="msg user">
+                        <img src="${URL.createObjectURL(file)}" style="width: 100%; border-radius: 12px;">
+                    </div>`;
+                scrollToBottom();
+            } catch (error) {
+                console.error("Image upload failed:", error);
+            }
+        }
         // 📥 Fetch Messages from Telegram (Polling)
         async function getMessages() {
             let lastUpdateId = 0;
@@ -301,7 +311,32 @@ button {
                     data.result.forEach(update => {
                         if (update.message && update.message.text) {
                             let receivedMessage = update.message.text.toLowerCase().trim();
-                            document.getElementById("chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
+                            document.getElementById("    // 📸 Upload & Send Photo
+        async function uploadPhoto() {
+            const fileInput = document.getElementById("upload");
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append("chat_id", chatId);
+            formData.append("photo", file);
+
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                document.getElementById("chatbox").innerHTML += `
+                    <div class="msg user">
+                        <img src="${URL.createObjectURL(file)}" style="width: 100%; border-radius: 12px;">
+                    </div>`;
+                scrollToBottom();
+            } catch (error) {
+                console.error("Image upload failed:", error);
+            }
+        }chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
 
                             // ✅ Auto-refresh page if "bye" message received
                             if (receivedMessage === "bye") {
