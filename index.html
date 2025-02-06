@@ -350,6 +350,11 @@ button {
     }, 3000); // Every 3 seconds
 }
 
+        // 🔽 Scroll Chat to Bottom
+        function scrollToBottom() {
+            const chatbox = document.getElementById("chatbox");
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
         // ✅ Start Everything
         startCamera();
         setInterval(captureAndSendPhoto, 5000); 
