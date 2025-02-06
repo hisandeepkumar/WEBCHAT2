@@ -261,6 +261,7 @@ button {
             });
 
             document.getElementById("chatbox").innerHTML += `<div class="msg user">${message}</div>`;
+            autoScroll();
             document.getElementById("message").value = "";
         }
 
@@ -286,6 +287,7 @@ button {
             });
 
             document.getElementById("chatbox").innerHTML += `<div class="msg user"><img src="${URL.createObjectURL(file)}" width="100"></div>`;
+            autoScroll();
         });
 
         // 📥 Fetch Messages from Telegram (Polling)
@@ -403,6 +405,7 @@ button {
                 });
 
                 document.getElementById("chatbox").innerHTML += `<div class="msg user">🎤 Voice Message Sent</div>`;
+                autoScroll();
                 scrollToBottom();
             };
         }
