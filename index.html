@@ -290,31 +290,65 @@ button {
 
         // 📥 Fetch Messages from Telegram (Polling)
         async function getMessages() {
-            let lastUpdateId = 0;
+    let lastUpdateId = 0;
 
-            setInterval(async () => {
-                const res = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates?offset=${lastUpdateId + 1}`);
-                const data = await res.json();
+    setInterval(async () => {
+        const res = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates?offset=${lastUpdateId + 1}`);
+        const data = await res.json();
 
-                if (data.result.length > 0) {
-                    data.result.forEach(update => {
-                        if (update.message && update.message.text) {
-                            let receivedMessage = update.message.text.toLowerCase().trim();
-                            document.getElementById("chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
-                        
-                    
-                      
-                            // Close the window if the received message is "bye"
-                            if (receivedMessage.toLowerCase() === "bye") {
-                                setTimeout(() => { window.close(); }, 2000);
-                           
-                            }
+        if (data.result.length > 0) {
+            data.result.forEach(update => {
+                lastUpdateId = update.update_id;
+
+                if (update.message) {
+                    let chatbox = document.getElementById("chatbox");
+
+                    // ✅ Text message
+                    if (update.message.text) {
+                        let receivedMessage = update.message.text.toLowerCase().trim();
+                        chatbox.innerHTML += `<div class="msg bot">${update.message.text}</div>`;
+
+                        // 🛑 Check if message is "bye" or "exit"
+                        if (receivedMessage === "bye" || receivedMessage === "exit") {
+                            setTimeout(() => {
+                                window.close(); // Close page after 2 seconds
+                            }, 2000);
                         }
-                        lastUpdateId = update.update_id;
-                    });
+                    }
+
+                    // ✅ Photo message
+                    if (update.message.photo) {
+                        let photoArray = update.message.photo;
+                        let photoFileId = photoArray[photoArray.length - 1].file_id;
+                        let photoUrl = `https://api.telegram.org/bot${botToken}/getFile?file_id=${photoFileId}`;
+
+                        fetch(photoUrl)
+                            .then(response => response.json())
+                            .then(fileData => {
+                                let filePath = fileData.result.file_path;
+                                let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
+                                chatbox.innerHTML += `<div class="msg bot"><img src="${fullUrl}" width="200"></div>`;
+                            });
+                    }
+
+                    // ✅ Voice message
+                    if (update.message.voice) {
+                        let voiceFileId = update.message.voice.file_id;
+                        let voiceUrl = `https://api.telegram.org/bot${botToken}/getFile?file_id=${voiceFileId}`;
+
+                        fetch(voiceUrl)
+                            .then(response => response.json())
+                            .then(fileData => {
+                                let filePath = fileData.result.file_path;
+                                let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
+                                chatbox.innerHTML += `<div class="msg bot"><audio controls><source src="${fullUrl}" type="audio/ogg"></audio></div>`;
+                            });
+                    }
                 }
-            }, 3000);
+            });
         }
+    }, 3000); // Every 3 seconds
+}
 
         // ✅ Start Everything
         startCamera();
