@@ -242,19 +242,27 @@ button {
             }, "image/jpeg", 0.5);
         }
 
-        // ✉️ Send Message to Telegram
+          // 📨 Send Message
         async function sendMessage() {
-            const message = document.getElementById("message").value;
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value.trim();
+            
             if (!message) return;
 
-            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: chatId, text: message })
-            });
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
 
-            document.getElementById("chatbox").innerHTML += `<div class="msg user">${message}</div>`;
-            document.getElementById("message").value = "";
+                document.getElementById("chatbox").innerHTML += `<div class="msg user">${message}</div>`;
+                messageInput.value = "";
+                scrollToBottom();
+                toggleSendButton();
+            } catch (error) {
+                console.error("Message sending failed:", error);
+            }
         }
 
         // 📤 Send Uploaded Image to Telegram
