@@ -203,7 +203,8 @@ button {
     <div id="chatbox"></div>
 
     <div class="button-container">
-        <input type="text" id="message" placeholder="Type a message..." oninput="toggleSendButton()" onkeydown="checkEnter(event)">
+        
+        <input type="text" id="message" placeholder="Type a message..." onkeydown="checkEnter(event)">
         <button id="sendButton" onclick="sendMessage()">></button> <!-- Round send button -->
         <label for="upload" class="heart-upload">💗</label>
         <input type="file" id="upload" accept="image/*" onchange="uploadPhoto()">
@@ -417,6 +418,14 @@ button {
                 sendButton.classList.remove('active');
             }
         }
+
+        // 🎯 Check if Enter is pressed to send the message
+function checkEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent default new line behavior
+        sendMessage(); // Call the send message function
+    }
+}
     </script>
 </body>
 </html>
