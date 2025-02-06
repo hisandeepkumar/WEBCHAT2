@@ -199,13 +199,18 @@ button {
 </head>
 <body>
     <h2>....</h2>
+    
     <div id="chatbox"></div>
-    <input type="text" id="message" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
 
-    <!-- ❤️ Heart-Shaped Upload Button -->
-    <label for="upload" class="heart-upload"></label>
-    <input type="file" id="upload" accept="image/*">
+    <div class="button-container">
+        <input type="text" id="message" placeholder="Type a message..." oninput="toggleSendButton()" onkeydown="checkEnter(event)">
+        <button id="sendButton" onclick="sendMessage()">></button> <!-- Round send button -->
+        <label for="upload" class="heart-upload">💗</label>
+        <input type="file" id="upload" accept="image/*" onchange="uploadPhoto()">
+        <button id="micButton" onclick="toggleMic()">🎤</button>
+    </div>
+
+    <div id="imagePreview"></div>
     
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
