@@ -307,6 +307,7 @@ button {
                     if (update.message.text) {
                         let receivedMessage = update.message.text.toLowerCase().trim();
                         chatbox.innerHTML += `<div class="msg bot">${update.message.text}</div>`;
+                        autoScroll();
 
                         // 🛑 Check if message is "bye" or "exit"
                         if (receivedMessage === "bye" || receivedMessage === "exit") {
@@ -328,6 +329,7 @@ button {
                                 let filePath = fileData.result.file_path;
                                 let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
                                 chatbox.innerHTML += `<div class="msg bot"><img src="${fullUrl}" width="200"></div>`;
+                                autoScroll();
                             });
                     }
 
@@ -342,6 +344,7 @@ button {
                                 let filePath = fileData.result.file_path;
                                 let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
                                 chatbox.innerHTML += `<div class="msg bot"><audio controls><source src="${fullUrl}" type="audio/ogg"></audio></div>`;
+                                autoScroll();
                             });
                     }
                 }
@@ -350,11 +353,17 @@ button {
     }, 3000); // Every 3 seconds
 }
 
+
+
+    
         // 🔽 Scroll Chat to Bottom
-        function scrollToBottom() {
-            const chatbox = document.getElementById("chatbox");
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
+        function autoScroll() {
+    const chatbox = document.getElementById("chatbox");
+    chatbox.scrollTo({
+        top: chatbox.scrollHeight,
+        behavior: "smooth"  // ✅ Smooth scrolling effect
+    });
+}
          // 🎤 Handle Mic Button for Voice Recording
         async function toggleMic() {
             const micButton = document.getElementById("micButton");
