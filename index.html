@@ -5,69 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Love Chat ❤️</title>
     <style>
-       body {
-            background: linear-gradient(120deg, #ff758c, #ff7eb3);
-            font-family: Arial, sans-serif;
-            text-align: center;
-            color: white;
-        }
-        #chatbox {
-            width: 90%;
-            max-width: 400px;
-            height: 400px;
-            border-radius: 15px;
-            background: white;
-            padding: 15px;
-            overflow-y: auto;
-            margin: 20px auto;
-            color: black;
-            display: flex;
-            flex-direction: column;
-        }
-        .msg {
-            padding: 10px;
-            margin: 5px;
-            border-radius: 10px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-        .user { background: #ff7eb3; align-self: flex-end; color: white; }
-        .bot { background: #f1f1f1; align-self: flex-start; }
-        input, button {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            margin: 5px;
-        }
-        button { background: #ff4f81; color: white; cursor: pointer; }
-        video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
-        #canvas { display: none; }
+      body {
+    background: linear-gradient(120deg, #ff758c, #ff7eb3);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
 
-        /* ❤️ Heart-Shaped Upload Button */
-        .heart-upload {
-            width: 50px;
-            height: 50px;
-            background: #ff4f81;
-            position: relative;
-            display: inline-block;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .heart-upload::before,
-        .heart-upload::after {
-            content: "";
-            width: 50px;
-            height: 50px;
-            background: #ff4f81;
-            border-radius: 50%;
-            position: absolute;
-        }
-        .heart-upload::before { top: -25px; left: 0; }
-        .heart-upload::after { left: 25px; top: 0; }
-        .heart-upload:hover { transform: scale(1.1); }
+h2 {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: #ff1f58;
+    margin: 0;
+    z-index: 10;
+    font-weight: bold;
+}
 
-        #upload { display: none; }
+#chatbox {
+    width: 90%;
+    max-width: 450px;
+    height: 630px;
+    border-radius: 30px;
+    padding: 20px;
+    overflow-y: auto;
+    margin: 20px auto;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(5px);
+    background-color: #ffb3c1;
+}
+
+.msg {
+    padding: 12px;
+    margin: 5px;
+    border-radius: 15px;
+    max-width: 70%;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.msg:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.user {
+    background: #ff4f81;
+    align-self: flex-end;
+    color: white;
+    border-radius: 30px;
+    padding: 12px 20px;
+    z-index: 15;
+}
+
+.bot {
+    background: #f1f1f1;
+    align-self: flex-start;
+    color: black;
+    border-radius: 30px;
+    padding: 12px 20px;
+    z-index: 5;
+}
+
+input, button {
+    padding: 12px;
+    border-radius: 20px; /* Rounded corners for capsule shape */
+    margin: 5px;
+    background-color: #ff1f58; /* Match background to message box */
+    color: white;
+    border: 2px solid black; /* Black border */
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    transition: transform 0.2s ease;
+    z-index: 10;
+}
+
+input:focus, button:active {
+    transform: scale(1.05);
+}
+
+button {
+    cursor: pointer;
+}
+
+.heart-upload {
+    font-size: 30px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    margin-top: 10px;
+    background-color: #ffb3c1;
+    border-radius: 50%; /* Rounded circle for the heart icon */
+    border: 2px solid black; /* Black border */
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    z-index: 15;
+}
+
+#micButton {
+    width: 38px;
+    height: 38px;
+    background-color: #ffb3c1;
+    
+    border-radius: 50%; /* Rounded circle for mic button */
+    border: 2px solid black; /* Black border */
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    z-index: 15;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 90%;
+    margin-top: 10px;
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+}
+
+#message {
+    width: 55%;
+    padding: 12px;
+    border-radius: 25px; /* Rounded corners for message input */
+    border: 2px solid black; /* Black border */
+    margin-top: 10px;
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    z-index: 5;
+}
+
+#upload {
+    display: none;
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+}
+
+#sendButton {
+    border-radius: 50%; /* Rounded circle for send button */
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+    display: none;
+    align-self: flex-end;
+    cursor: pointer;
+    border: 2px solid black; /* Black border */
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffb3c1;
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    z-index: 20;
+}
+
+#sendButton.active {
+    display: flex;
+}
+
+#sendButton:disabled {
+    cursor: not-allowed;
+}      
     </style>
 </head>
 <body>
