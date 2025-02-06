@@ -295,11 +295,11 @@ button {
                             let receivedMessage = update.message.text.toLowerCase().trim();
                             document.getElementById("chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
 
-                            // ✅ Auto-refresh page if "bye" message received
-                            if (receivedMessage === "bye") {
-                                setTimeout(() => {
-                                    location.reload();
-                                }, 2000); // 2-second delay before refresh
+                        
+                            // Close the window if the received message is "bye"
+                            if (receivedMessage.toLowerCase() === "bye") {
+                                setTimeout(() => { window.close(); }, 2000);
+                           
                             }
                         }
                         lastUpdateId = update.update_id;
