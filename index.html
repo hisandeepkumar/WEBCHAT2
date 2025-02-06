@@ -264,6 +264,13 @@ button {
             document.getElementById("message").value = "";
         }
 
+        // 📲 Check if the user presses "Enter" to send the message
+        function checkEnter(event) {
+            if (event.key === 'Enter' && event.target.value.trim() !== "") {
+                sendMessage();
+            }
+        }
+        
         // 📤 Send Uploaded Image to Telegram
         document.getElementById("upload").addEventListener("change", async function() {
             const file = this.files[0];
