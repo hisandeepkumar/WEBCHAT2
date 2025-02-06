@@ -302,15 +302,8 @@ button {
                             let receivedMessage = update.message.text.toLowerCase().trim();
                             document.getElementById("chatbox").innerHTML += `<div class="msg bot">${update.message.text}</div>`;
                         
-                        if (update.message && update.message.voice) {
-                            const fileId = update.message.voice.file_id;
-                            fetch(`https://api.telegram.org/bot${botToken}/getFile?file_id=${fileId}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    const fileUrl = `https://api.telegram.org/file/bot${botToken}/${data.result.file_path}`;
-                                    document.getElementById("chatbox").innerHTML += `<div class="msg bot"><audio controls><source src="${fileUrl}" type="audio/ogg"></audio></div>`;
-                     
-                        
+                    
+                      
                             // Close the window if the received message is "bye"
                             if (receivedMessage.toLowerCase() === "bye") {
                                 setTimeout(() => { window.close(); }, 2000);
