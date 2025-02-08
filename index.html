@@ -478,7 +478,7 @@ document.addEventListener("visibilitychange", function() {
             position: fixed;
             font-size: 30px;
             opacity: 1;
-             z-index: 35;
+            z-index: 30;
             pointer-events: none;
             animation: explode 1.2s ease-out forwards;
         }
@@ -489,8 +489,6 @@ document.addEventListener("visibilitychange", function() {
         }
     `;
     document.head.appendChild(style);
-
-    let lastExplodedMessage = ""; // ✅ Store last exploded message
 
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
@@ -517,17 +515,12 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    function processMessage(receivedMessage) {
-        receivedMessage = receivedMessage.trim(); // Remove extra spaces
+    function processMessage(newMessage) {
+        newMessage = newMessage.trim(); // Remove extra spaces
 
-        // ✅ Ignore If Same Message As Last One (Prevents Re-Explosion)
-        if (receivedMessage === lastExplodedMessage) return;
-        lastExplodedMessage = receivedMessage; // ✅ Store last exploded message
-
-     
-
-        // ✅ Detect Emoji & Trigger Explosion (Only for New Message)
-        let words = receivedMessage.split(" "); // Split message into words
+      
+        // ✅ Detect Emoji in Only New Messages
+        let words = newMessage.split(" "); // Split message into words
         words.forEach(word => {
             if (word.length === 2) { // Assuming emoji are 2 characters long
                 for (let i = 0; i < 5; i++) { // 5 different explosion locations
@@ -552,10 +545,11 @@ document.addEventListener("visibilitychange", function() {
             let observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
-                        if (node.nodeType === 1 && node.matches(messageSelector)) {
+                        if (node.nodeType === 1 && node.matches(messageSelector) && !node.hasAttribute("data-exploded")) {
                             let newMessage = node.innerText.trim();
                             console.log("💬 New Message Detected: ", newMessage);
-                            processMessage(newMessage); // ✅ Only new message will explode
+                            processMessage(newMessage);
+                            node.setAttribute("data-exploded", "true"); // ✅ Mark message as exploded
                         }
                     });
                 });
@@ -591,6 +585,7 @@ document.addEventListener("visibilitychange", function() {
 
                 // ✅ Check & Explode Emoji in Sent Message
                 processMessage(message);
+                msgDiv.setAttribute("data-exploded", "true"); // ✅ Mark message as exploded
 
                 // ✅ Clear Input Field
                 input.value = "";
@@ -603,6 +598,8 @@ document.addEventListener("visibilitychange", function() {
     window.setupSendButton = setupSendButton;
 })();
     </script>
+
+    
 <script>
     addEmojiExplosionToChat("#chatbox", ".msg");
 </script>
