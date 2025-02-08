@@ -464,5 +464,51 @@ document.addEventListener("visibilitychange", function() {
     }
 });
 </script>
+
+    
+// LOVE MESSAGE ANIMATION
+
+<script>
+    
+    function createHeartExplosion() {
+    for (let i = 0; i < 20; i++) { // Create 20 hearts
+        let heart = document.createElement("div");
+        heart.innerHTML = "❤️"; 
+        document.body.appendChild(heart);
+
+        // Generate random position
+        let x = Math.random() * window.innerWidth;
+        let y = Math.random() * window.innerHeight;
+
+        // Apply styles directly in JavaScript
+        heart.style.position = "fixed";
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.style.fontSize = "30px";
+        heart.style.color = "red";
+        heart.style.opacity = "1";
+        heart.style.transform = "scale(0) translateY(0)";
+        heart.style.transition = "transform 1.5s linear, opacity 1.5s linear";
+
+        // Animate after slight delay
+        setTimeout(() => {
+            heart.style.transform = "scale(1.5) translateY(-100px)";
+            heart.style.opacity = "0";
+        }, 50);
+
+        // Remove heart after animation
+        setTimeout(() => {
+            heart.remove();
+        }, 1500);
+    }
+}
+
+// 🛑 Check if message is "love"
+if (receivedMessage.toLowerCase() === "love") {
+    createHeartExplosion(); // Trigger heart animation
+}
+
+</script>
+   
 </body>
 </html>
