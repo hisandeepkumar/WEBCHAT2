@@ -468,50 +468,66 @@ document.addEventListener("visibilitychange", function() {
     
 
 <script>
-    function createHeartExplosion() {
-        for (let i = 0; i < 20; i++) { // Create 20 hearts
-            let heart = document.createElement("div");
-            heart.innerHTML = "❤️"; 
-            document.body.appendChild(heart);
+   (function () {
+    function createEmojiExplosion(x, y, emoji) {
+        for (let i = 0; i < 20; i++) { // Create 20 emojis per explosion
+            let explosion = document.createElement("div");
+            explosion.innerHTML = emoji;
+            explosion.classList.add("emoji");
+            document.body.appendChild(explosion);
 
-            // Generate random position
-            let x = Math.random() * window.innerWidth;
-            let y = Math.random() * window.innerHeight;
+            // Random direction for explosion
+            let angle = Math.random() * 2 * Math.PI; // 0 to 360 degrees
+            let distance = Math.random() * 200 + 50; // Random explosion radius
 
-            // Apply styles directly in JavaScript
-            heart.style.position = "fixed";
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            heart.style.fontSize = "30px";
-            heart.style.color = "red";
-            heart.style.opacity = "1";
-            heart.style.transform = "scale(0) translateY(0)";
-            heart.style.transition = "transform 1.5s linear, opacity 1.5s linear";
+            let offsetX = Math.cos(angle) * distance;
+            let offsetY = Math.sin(angle) * distance;
 
-            // Animate after slight delay
+            explosion.style.position = "fixed";
+            explosion.style.left = `${x}px`;
+            explosion.style.top = `${y}px`;
+            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+            explosion.style.opacity = "1";
+            explosion.style.pointerEvents = "none";
+            explosion.style.transition = "transform 1.2s ease-out, opacity 1.2s ease-out";
+            explosion.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
+            explosion.style.opacity = "0";
+
+            // Remove emoji after animation
             setTimeout(() => {
-                heart.style.transform = "scale(1.5) translateY(-100px)";
-                heart.style.opacity = "0";
-            }, 50);
-
-            // Remove heart after animation
-            setTimeout(() => {
-                heart.remove();
-            }, 1500);
+                explosion.remove();
+            }, 1200);
         }
     }
 
-    // Simulating a received message (Replace this with actual chat logic)
-    function onMessageReceived(receivedMessage) {
-        if (receivedMessage.toLowerCase() === "love") {
-            createHeartExplosion(); // Trigger heart animation
-        }
+    function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
+        let chatbox = document.querySelector(chatboxSelector);
+        if (!chatbox) return;
+
+        let observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.matches && node.matches(messageSelector)) {
+                        let emoji = node.textContent.trim();
+                        if (emoji.length > 0) {
+                            for (let i = 0; i < 5; i++) { // 5 different explosion locations
+                                let x = Math.random() * window.innerWidth;
+                                let y = Math.random() * window.innerHeight;
+                                createEmojiExplosion(x, y, emoji);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        observer.observe(chatbox, { childList: true, subtree: true });
     }
 
-    // Example: Call onMessageReceived when a user sends "love"
-    setTimeout(() => {
-        onMessageReceived("love"); // Simulating a message received after 3 seconds
-    }, 3000);
+    // Example Usage: Call this function with your chatbox & message selector
+    window.addEmojiExplosionToChat = addEmojiExplosionToChat;
+
+})();
 </script>
 
    
