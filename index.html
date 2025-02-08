@@ -470,7 +470,7 @@ document.addEventListener("visibilitychange", function() {
 
 
     <script>
- (function () {
+(function () {
     // ✅ Add Required CSS Dynamically
     const style = document.createElement("style");
     style.innerHTML = `
@@ -478,7 +478,7 @@ document.addEventListener("visibilitychange", function() {
             position: fixed;
             font-size: 30px;
             opacity: 1;
-            z-index: 30;
+            z-index: 35;
             pointer-events: none;
             animation: explode 1.2s ease-out forwards;
         }
@@ -518,9 +518,8 @@ document.addEventListener("visibilitychange", function() {
     function processMessage(receivedMessage) {
         receivedMessage = receivedMessage.trim(); // Remove extra spaces
 
-       
-
-        // ✅ Detect Emoji & Trigger Explosion (Only for New Message)
+    
+        // ✅ Detect Emoji & Trigger Explosion
         let words = receivedMessage.split(" "); // Split message into words
         words.forEach(word => {
             if (word.length === 2) { // Assuming emoji are 2 characters long
@@ -555,7 +554,7 @@ document.addEventListener("visibilitychange", function() {
                 });
             });
 
-            observer.observe(chatbox, { childList: true, subtree: true });
+            observer.observe(chatbox, { childList: true });
 
             console.log("✅ Emoji explosion observer started!");
         });
@@ -576,7 +575,7 @@ document.addEventListener("visibilitychange", function() {
                 let message = input.value.trim();
                 if (message === "") return;
 
-                // ✅ Add Sent Message to Chatbox
+                // ✅ Add Sent Message to Chatbox (New Message Only)
                 let msgDiv = document.createElement("div");
                 msgDiv.classList.add("msg", "user");
                 msgDiv.textContent = message;
