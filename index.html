@@ -475,7 +475,7 @@ document.addEventListener("visibilitychange", function() {
     
 
 <script>
-
+    
 (function () {
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
@@ -484,8 +484,7 @@ document.addEventListener("visibilitychange", function() {
             explosion.classList.add("emoji");
             document.body.appendChild(explosion);
 
-            // Random direction for explosion
-            let angle = Math.random() * 2 * Math.PI; // 0 to 360 degrees
+            let angle = Math.random() * 2 * Math.PI; // Random direction
             let distance = Math.random() * 200 + 50; // Random explosion radius
 
             let offsetX = Math.cos(angle) * distance;
@@ -494,22 +493,33 @@ document.addEventListener("visibilitychange", function() {
             explosion.style.position = "fixed";
             explosion.style.left = `${x}px`;
             explosion.style.top = `${y}px`;
-            explosion.style.fontSize = `${Math.random() * 20 + 25}px`; // Random size
+            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
             explosion.style.opacity = "1";
             explosion.style.pointerEvents = "none";
-            explosion.style.transition = "transform 1.5s ease-out, opacity 1.5s ease-out";
+            explosion.style.transition = "transform 1.2s ease-out, opacity 1.2s ease-out";
             explosion.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
             explosion.style.opacity = "0";
 
-            // Remove emoji after animation
             setTimeout(() => {
                 explosion.remove();
-            }, 1500);
+            }, 1200);
         }
     }
 
-    function addEmojiExplosionToChat() {
-        let chatbox = document.getElementById("chatbox");
+    function detectEmoji(text) {
+        let emojiMatch = text.match(/[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
+        if (emojiMatch) {
+            let emoji = emojiMatch[0]; // First emoji found
+            for (let i = 0; i < 5; i++) { // 5 different explosion locations
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+                createEmojiExplosion(x, y, emoji);
+            }
+        }
+    }
+
+    function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
+        let chatbox = document.querySelector(chatboxSelector);
         if (!chatbox) {
             console.error("Chatbox not found!");
             return;
@@ -518,18 +528,8 @@ document.addEventListener("visibilitychange", function() {
         let observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1 && node.classList.contains("msg")) {
-                        let text = node.innerText.trim();
-                        let emojiMatch = text.match(/[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
-
-                        if (emojiMatch) {
-                            let emoji = emojiMatch[0]; // First emoji found
-                            for (let i = 0; i < 5; i++) { // 5 different explosion locations
-                                let x = Math.random() * window.innerWidth;
-                                let y = Math.random() * window.innerHeight;
-                                createEmojiExplosion(x, y, emoji);
-                            }
-                        }
+                    if (node.nodeType === 1 && node.matches(messageSelector)) {
+                        detectEmoji(node.innerText.trim());
                     }
                 });
             });
@@ -540,12 +540,9 @@ document.addEventListener("visibilitychange", function() {
         console.log("✅ Emoji explosion observer started!");
     }
 
-    // ✅ Ensure function runs only after DOM loads
-    window.addEventListener("DOMContentLoaded", function () {
-        addEmojiExplosionToChat();
-    });
-
+    window.addEmojiExplosionToChat = addEmojiExplosionToChat;
 })();
+
 </script>
 
    
