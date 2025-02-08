@@ -490,51 +490,45 @@ document.addEventListener("visibilitychange", function() {
     `;
     document.head.appendChild(style);
 
-    let lastMessageId = 0; // ✅ Store last processed message ID
+    let lastExplodedEmoji = ""; // ✅ Store last exploded emoji
 
     function createEmojiExplosion(x, y, emoji) {
-        for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
-            let explosion = document.createElement("div");
-            explosion.innerHTML = emoji;
-            explosion.classList.add("emoji");
-            document.body.appendChild(explosion);
+        let explosion = document.createElement("div");
+        explosion.innerHTML = emoji;
+        explosion.classList.add("emoji");
+        document.body.appendChild(explosion);
 
-            let angle = Math.random() * 2 * Math.PI; // Random direction
-            let distance = Math.random() * 200 + 50; // Random explosion radius
+        let angle = Math.random() * 2 * Math.PI; // Random direction
+        let distance = Math.random() * 200 + 50; // Random explosion radius
 
-            let offsetX = Math.cos(angle) * distance;
-            let offsetY = Math.sin(angle) * distance;
+        let offsetX = Math.cos(angle) * distance;
+        let offsetY = Math.sin(angle) * distance;
 
-            explosion.style.setProperty("--x", `${offsetX}px`);
-            explosion.style.setProperty("--y", `${offsetY}px`);
-            explosion.style.left = `${x}px`;
-            explosion.style.top = `${y}px`;
-            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+        explosion.style.setProperty("--x", `${offsetX}px`);
+        explosion.style.setProperty("--y", `${offsetY}px`);
+        explosion.style.left = `${x}px`;
+        explosion.style.top = `${y}px`;
+        explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
 
-            setTimeout(() => {
-                explosion.remove();
-            }, 1200);
-        }
+        setTimeout(() => {
+            explosion.remove();
+        }, 1200);
     }
 
-    function processMessage(newMessage, messageId) {
+    function processMessage(newMessage) {
         newMessage = newMessage.trim(); // Remove extra spaces
-
-        // ✅ Ignore If Message Was Already Processed
-        if (messageId <= lastMessageId) return;
-        lastMessageId = messageId; // ✅ Store new message ID
 
         // ✅ Detect Emoji in Only New Messages
         let words = newMessage.split(" "); // Split message into words
-        words.forEach(word => {
-            if (word.length === 2) { // Assuming emoji are 2 characters long
-                for (let i = 0; i < 5; i++) { // 5 different explosion locations
-                    let x = Math.random() * window.innerWidth;
-                    let y = Math.random() * window.innerHeight;
-                    createEmojiExplosion(x, y, word);
-                }
+        for (let word of words) {
+            if (word.length === 2 && word !== lastExplodedEmoji) { // ✅ Check if new emoji
+                lastExplodedEmoji = word; // ✅ Store latest emoji
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+                createEmojiExplosion(x, y, word);
+                return; // ✅ Ensure only one emoji explodes per message
             }
-        });
+        }
     }
 
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
@@ -547,16 +541,13 @@ document.addEventListener("visibilitychange", function() {
 
             console.log("✅ Chatbox Found, Starting Observer...");
 
-            let messageCounter = 0; // ✅ Unique ID for each new message
-
             let observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === 1 && node.matches(messageSelector)) {
                             let newMessage = node.innerText.trim();
-                            messageCounter++; // ✅ Increment message ID
                             console.log("💬 New Message Detected: ", newMessage);
-                            processMessage(newMessage, messageCounter); // ✅ Process only new messages
+                            processMessage(newMessage); // ✅ Process only newest message
                         }
                     });
                 });
@@ -591,7 +582,7 @@ document.addEventListener("visibilitychange", function() {
                 chatbox.scrollTop = chatbox.scrollHeight;
 
                 // ✅ Process Only This New Message
-                processMessage(message, ++lastMessageId); 
+                processMessage(message); 
 
                 // ✅ Clear Input Field
                 input.value = "";
