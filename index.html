@@ -470,7 +470,7 @@ document.addEventListener("visibilitychange", function() {
 
 
     <script>
-        (function () {
+     (function () {
     // ✅ Add Required CSS Dynamically
     const style = document.createElement("style");
     style.innerHTML = `
@@ -483,21 +483,13 @@ document.addEventListener("visibilitychange", function() {
         }
         
         @keyframes explode {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--x), var(--y)) scale(1.5);
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
         }
     `;
     document.head.appendChild(style);
 
-    // ✅ Manually Defined Emoji List
-    const emojiList = ["😂", "❤️", "🔥", "😎", "💀", "🎉", "😍", "🌟", "💖", "👍"];
-
+    // ✅ Function to Create Emoji Explosion
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
             let explosion = document.createElement("div");
@@ -523,13 +515,20 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
+    // ✅ Function to Process Message & Detect Emoji
     function processMessage(receivedMessage) {
         receivedMessage = receivedMessage.trim(); // Remove extra spaces
 
-       
+        // ✅ Close Tab If "bye" or "exit" Received
+        if (receivedMessage === "bye" || receivedMessage === "exit") {
+            setTimeout(() => {
+                window.close(); // Close page after 2 seconds
+            }, 2000);
+            return;
+        }
 
-        // ✅ Emoji Explosion If Message Matches an Emoji
-        if (emojiList.includes(receivedMessage)) {
+        // ✅ Detect Emoji (No predefined list, any emoji works)
+        if (receivedMessage.length === 2) { // Assumes emoji are 2-char length
             for (let i = 0; i < 5; i++) { // 5 different explosion locations
                 let x = Math.random() * window.innerWidth;
                 let y = Math.random() * window.innerHeight;
@@ -538,6 +537,7 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
+    // ✅ Function to Observe Messages in Chatbox
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
         document.addEventListener("DOMContentLoaded", function () {
             let chatbox = document.querySelector(chatboxSelector);
@@ -565,8 +565,41 @@ document.addEventListener("visibilitychange", function() {
         });
     }
 
-    // ✅ Function Accessible Globally
+    // ✅ Function to Handle Send Button Click & Explode Sent Emoji
+    function setupSendButton(inputSelector, sendButtonSelector, chatboxSelector) {
+        document.addEventListener("DOMContentLoaded", function () {
+            let input = document.querySelector(inputSelector);
+            let sendButton = document.querySelector(sendButtonSelector);
+            let chatbox = document.querySelector(chatboxSelector);
+
+            if (!input || !sendButton || !chatbox) {
+                console.error("❌ Input, Send Button, or Chatbox not found!");
+                return;
+            }
+
+            sendButton.addEventListener("click", function () {
+                let message = input.value.trim();
+                if (message === "") return;
+
+                // ✅ Add Sent Message to Chatbox
+                let msgDiv = document.createElement("div");
+                msgDiv.classList.add("msg", "user");
+                msgDiv.textContent = message;
+                chatbox.appendChild(msgDiv);
+                chatbox.scrollTop = chatbox.scrollHeight;
+
+                // ✅ Check & Explode Emoji in Sent Message
+                processMessage(message);
+
+                // ✅ Clear Input Field
+                input.value = "";
+            });
+        });
+    }
+
+    // ✅ Functions Accessible Globally
     window.addEmojiExplosionToChat = addEmojiExplosionToChat;
+    window.setupSendButton = setupSendButton;
 })();
     </script>
 <script>
