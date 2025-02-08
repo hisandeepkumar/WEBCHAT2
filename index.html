@@ -490,8 +490,11 @@ document.addEventListener("visibilitychange", function() {
     `;
     document.head.appendChild(style);
 
-    function createEmojiExplosion(x, y, emoji) {
-        for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
+    function createEmojiExplosion(emoji) {
+        for (let i = 0; i < 5; i++) { // ✅ Explosion at 5 random locations
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+
             let explosion = document.createElement("div");
             explosion.innerHTML = emoji;
             explosion.classList.add("emoji");
@@ -528,9 +531,7 @@ document.addEventListener("visibilitychange", function() {
         let words = messageText.split(" "); // Split message into words
         for (let word of words) {
             if (word.length === 2) { // ✅ Detect only one type of emoji
-                let x = Math.random() * window.innerWidth;
-                let y = Math.random() * window.innerHeight;
-                createEmojiExplosion(x, y, word);
+                createEmojiExplosion(word); // ✅ Multi-location explosion
                 return; // ✅ Ensure only one type of emoji explodes per latest message
             }
         }
