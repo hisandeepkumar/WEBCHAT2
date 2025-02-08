@@ -507,8 +507,8 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
-        let chatbox = document.querySelector(chatboxSelector);
+    function addEmojiExplosionToChat() {
+        let chatbox = document.getElementById("chatbox");
         if (!chatbox) {
             console.error("Chatbox not found!");
             return;
@@ -541,7 +541,7 @@ document.addEventListener("visibilitychange", function() {
 
     // ✅ Call function when page loads
     window.addEventListener("DOMContentLoaded", function () {
-        addEmojiExplosionToChat("#chatbox", ".msg");
+        addEmojiExplosionToChat();
     });
 
 })();
