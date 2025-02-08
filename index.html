@@ -480,7 +480,7 @@ document.addEventListener("visibilitychange", function() {
             opacity: 1;
             z-index: 30;
             pointer-events: none;
-            animation: explode 1.2s ease-out forwards;
+            transition: transform 1.2s ease-out, opacity 1.2s ease-out;
         }
         
         @keyframes explode {
@@ -491,7 +491,7 @@ document.addEventListener("visibilitychange", function() {
     document.head.appendChild(style);
 
     function createEmojiExplosion(emoji) {
-        for (let i = 0; i < 5; i++) { // ✅ Explosion at 5 random locations
+        for (let i = 0; i < 15; i++) { // ✅ Explosion at 15 random locations
             let x = Math.random() * window.innerWidth;
             let y = Math.random() * window.innerHeight;
 
@@ -511,6 +511,14 @@ document.addEventListener("visibilitychange", function() {
             explosion.style.left = `${x}px`;
             explosion.style.top = `${y}px`;
             explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+            explosion.style.opacity = "1";
+            explosion.style.transform = "scale(0) translateY(0)";
+            explosion.style.transition = "transform 1.2s ease-out, opacity 1.2s ease-out";
+
+            setTimeout(() => {
+                explosion.style.transform = "scale(1.5) translateY(-100px)";
+                explosion.style.opacity = "0";
+            }, 50);
 
             setTimeout(() => {
                 explosion.remove();
