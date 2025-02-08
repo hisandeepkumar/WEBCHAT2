@@ -454,8 +454,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 document.addEventListener("visibilitychange", function() {
     if (document.hidden) {
-        console.log("Tab background me chala gaya, closing...");
-        window.close(); // Page ko band karne ki koshish karega
+        console.log("Tab background me chala gaya.");
+    } else {
+        console.log("Tab foreground me aaya, refreshing...");
+        location.reload();
     }
 });
 </script>
