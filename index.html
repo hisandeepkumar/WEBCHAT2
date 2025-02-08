@@ -493,40 +493,44 @@ document.addEventListener("visibilitychange", function() {
     let lastExplodedEmoji = ""; // ✅ Store last exploded emoji
 
     function createEmojiExplosion(x, y, emoji) {
-        let explosion = document.createElement("div");
-        explosion.innerHTML = emoji;
-        explosion.classList.add("emoji");
-        document.body.appendChild(explosion);
+        for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
+            let explosion = document.createElement("div");
+            explosion.innerHTML = emoji;
+            explosion.classList.add("emoji");
+            document.body.appendChild(explosion);
 
-        let angle = Math.random() * 2 * Math.PI; // Random direction
-        let distance = Math.random() * 200 + 50; // Random explosion radius
+            let angle = Math.random() * 2 * Math.PI; // Random direction
+            let distance = Math.random() * 200 + 50; // Random explosion radius
 
-        let offsetX = Math.cos(angle) * distance;
-        let offsetY = Math.sin(angle) * distance;
+            let offsetX = Math.cos(angle) * distance;
+            let offsetY = Math.sin(angle) * distance;
 
-        explosion.style.setProperty("--x", `${offsetX}px`);
-        explosion.style.setProperty("--y", `${offsetY}px`);
-        explosion.style.left = `${x}px`;
-        explosion.style.top = `${y}px`;
-        explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+            explosion.style.setProperty("--x", `${offsetX}px`);
+            explosion.style.setProperty("--y", `${offsetY}px`);
+            explosion.style.left = `${x}px`;
+            explosion.style.top = `${y}px`;
+            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
 
-        setTimeout(() => {
-            explosion.remove();
-        }, 1200);
+            setTimeout(() => {
+                explosion.remove();
+            }, 1200);
+        }
     }
 
     function processMessage(newMessage) {
         newMessage = newMessage.trim(); // Remove extra spaces
 
-        // ✅ Detect Emoji in Only New Messages
+        // ✅ Detect Only One Type of Emoji in New Message
         let words = newMessage.split(" "); // Split message into words
         for (let word of words) {
             if (word.length === 2 && word !== lastExplodedEmoji) { // ✅ Check if new emoji
                 lastExplodedEmoji = word; // ✅ Store latest emoji
-                let x = Math.random() * window.innerWidth;
-                let y = Math.random() * window.innerHeight;
-                createEmojiExplosion(x, y, word);
-                return; // ✅ Ensure only one emoji explodes per message
+                for (let i = 0; i < 5; i++) { // 5 different explosion locations
+                    let x = Math.random() * window.innerWidth;
+                    let y = Math.random() * window.innerHeight;
+                    createEmojiExplosion(x, y, word);
+                }
+                return; // ✅ Ensure only one type of emoji explodes per message
             }
         }
     }
