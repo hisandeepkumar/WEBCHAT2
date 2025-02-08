@@ -475,9 +475,10 @@ document.addEventListener("visibilitychange", function() {
     
 
 <script>
+
 (function () {
     function createEmojiExplosion(x, y, emoji) {
-        for (let i = 0; i < 20; i++) { // Create 20 emojis per explosion
+        for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
             let explosion = document.createElement("div");
             explosion.innerHTML = emoji;
             explosion.classList.add("emoji");
@@ -493,17 +494,17 @@ document.addEventListener("visibilitychange", function() {
             explosion.style.position = "fixed";
             explosion.style.left = `${x}px`;
             explosion.style.top = `${y}px`;
-            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+            explosion.style.fontSize = `${Math.random() * 20 + 25}px`; // Random size
             explosion.style.opacity = "1";
             explosion.style.pointerEvents = "none";
-            explosion.style.transition = "transform 1.2s ease-out, opacity 1.2s ease-out";
+            explosion.style.transition = "transform 1.5s ease-out, opacity 1.5s ease-out";
             explosion.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
             explosion.style.opacity = "0";
 
             // Remove emoji after animation
             setTimeout(() => {
                 explosion.remove();
-            }, 1200);
+            }, 1500);
         }
     }
 
@@ -519,7 +520,7 @@ document.addEventListener("visibilitychange", function() {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1 && node.classList.contains("msg")) {
                         let text = node.innerText.trim();
-                        let emojiMatch = text.match(/[\p{Emoji}]/gu);
+                        let emojiMatch = text.match(/[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
 
                         if (emojiMatch) {
                             let emoji = emojiMatch[0]; // First emoji found
@@ -536,10 +537,10 @@ document.addEventListener("visibilitychange", function() {
 
         observer.observe(chatbox, { childList: true, subtree: true });
 
-        console.log("Emoji explosion observer started!");
+        console.log("✅ Emoji explosion observer started!");
     }
 
-    // ✅ Call function when page loads
+    // ✅ Ensure function runs only after DOM loads
     window.addEventListener("DOMContentLoaded", function () {
         addEmojiExplosionToChat();
     });
