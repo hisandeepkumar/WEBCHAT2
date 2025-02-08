@@ -610,6 +610,64 @@ document.addEventListener("visibilitychange", function() {
 })();
     </script>
 
+    <script>
+
+(function () {
+    function vibrateOnNewMessage() {
+        if (navigator.vibrate) {
+            navigator.vibrate([50, 30, 50, 50, 100, 50]); 
+            // ✅ Short pulses & strong bursts (message received feedback)
+        }
+    }
+
+    function vibrateOnEmojiExplosion() {
+        if (navigator.vibrate) {
+            navigator.vibrate([100, 50, 200, 50, 100, 50, 300]); 
+            // ✅ Firecracker effect vibration pattern:
+            // ✅ Initial spark (100ms), delay (50ms), explosion (200ms), 
+            // ✅ small gap (50ms), secondary burst (100ms), 
+            // ✅ crackling effect (50ms), final BOOM (300ms)
+        }
+    }
+
+    function addVibrationToChat(chatboxSelector, messageSelector) {
+        document.addEventListener("DOMContentLoaded", function () {
+            let chatbox = document.querySelector(chatboxSelector);
+            if (!chatbox) {
+                console.error("❌ Chatbox not found!");
+                return;
+            }
+
+            console.log("✅ Chatbox Found, Starting Vibration Observer...");
+
+            let observer = new MutationObserver(() => {
+                setTimeout(() => {
+                    vibrateOnNewMessage(); // ✅ Vibrate when a new message is added
+                }, 100);
+            });
+
+            observer.observe(chatbox, { childList: true });
+
+            console.log("✅ Vibration observer started!");
+        });
+    }
+
+    function addVibrationToEmojiExplosion() {
+        document.addEventListener("animationstart", function (event) {
+            if (event.animationName === "explode") {
+                vibrateOnEmojiExplosion(); // ✅ Vibrate on emoji explosion
+            }
+        });
+        console.log("✅ Emoji explosion vibration enabled!");
+    }
+
+    // ✅ Functions Accessible Globally
+    window.addVibrationToChat = addVibrationToChat;
+    window.addVibrationToEmojiExplosion = addVibrationToEmojiExplosion;
+})();
+        
+    </script>
+
     
 <script>
     addEmojiExplosionToChat("#chatbox", ".msg");
