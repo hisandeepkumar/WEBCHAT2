@@ -440,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let enteredPin = this.value;
         let correctPin = "27038"; // Change this PIN
 
-        if (enteredPin.length === 4) { // Jaise hi 4 digit enter hote hain
+        if (enteredPin.length === 8) { // Jaise hi 4 digit enter hote hain
             if (enteredPin === correctPin) {
                 document.getElementById("pinContainer").remove(); // Lock screen hatana
             } else {
