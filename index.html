@@ -470,7 +470,7 @@ document.addEventListener("visibilitychange", function() {
 
 
     <script>
-  (function () {
+ (function () {
     // ✅ Add Required CSS Dynamically
     const style = document.createElement("style");
     style.innerHTML = `
@@ -478,6 +478,7 @@ document.addEventListener("visibilitychange", function() {
             position: fixed;
             font-size: 30px;
             opacity: 1;
+            z-index: 30;
             pointer-events: none;
             animation: explode 1.2s ease-out forwards;
         }
@@ -488,9 +489,6 @@ document.addEventListener("visibilitychange", function() {
         }
     `;
     document.head.appendChild(style);
-
-    // ✅ Keep Track of Already Exploded Messages
-    let explodedMessages = new Set();
 
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
@@ -520,26 +518,19 @@ document.addEventListener("visibilitychange", function() {
     function processMessage(receivedMessage) {
         receivedMessage = receivedMessage.trim(); // Remove extra spaces
 
-        // ✅ Ignore Already Exploded Messages
-        if (explodedMessages.has(receivedMessage)) return;
-        explodedMessages.add(receivedMessage); // Mark as exploded
+       
 
-        // ✅ Close Tab If "bye" or "exit" Received
-        if (receivedMessage === "bye" || receivedMessage === "exit") {
-            setTimeout(() => {
-                window.close(); // Close page after 2 seconds
-            }, 2000);
-            return;
-        }
-
-        // ✅ Detect Emoji & Trigger Explosion
-        if (receivedMessage.length === 2) { // Assumes emoji are 2-char length
-            for (let i = 0; i < 5; i++) { // 5 different explosion locations
-                let x = Math.random() * window.innerWidth;
-                let y = Math.random() * window.innerHeight;
-                createEmojiExplosion(x, y, receivedMessage);
+        // ✅ Detect Emoji & Trigger Explosion (Only for New Message)
+        let words = receivedMessage.split(" "); // Split message into words
+        words.forEach(word => {
+            if (word.length === 2) { // Assuming emoji are 2 characters long
+                for (let i = 0; i < 5; i++) { // 5 different explosion locations
+                    let x = Math.random() * window.innerWidth;
+                    let y = Math.random() * window.innerHeight;
+                    createEmojiExplosion(x, y, word);
+                }
             }
-        }
+        });
     }
 
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
@@ -558,7 +549,7 @@ document.addEventListener("visibilitychange", function() {
                         if (node.nodeType === 1 && node.matches(messageSelector)) {
                             let newMessage = node.innerText.trim();
                             console.log("💬 New Message Detected: ", newMessage);
-                            processMessage(newMessage);
+                            processMessage(newMessage); // ✅ Only new message will explode
                         }
                     });
                 });
