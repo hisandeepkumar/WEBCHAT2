@@ -195,8 +195,7 @@ button {
         video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
         #canvas { display: none; }
 
-
-        .emoji {
+.emoji {
     position: fixed;
     font-size: 30px;
     opacity: 1;
@@ -476,7 +475,7 @@ document.addEventListener("visibilitychange", function() {
     
 
 <script>
- (function () {
+(function () {
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 20; i++) { // Create 20 emojis per explosion
             let explosion = document.createElement("div");
@@ -510,14 +509,18 @@ document.addEventListener("visibilitychange", function() {
 
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
         let chatbox = document.querySelector(chatboxSelector);
-        if (!chatbox) return;
+        if (!chatbox) {
+            console.error("Chatbox not found!");
+            return;
+        }
 
         let observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node.classList && node.classList.contains("msg")) {
-                        let text = node.textContent.trim();
-                        let emojiMatch = text.match(/([\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}])/gu);
+                    if (node.nodeType === 1 && node.classList.contains("msg")) {
+                        let text = node.innerText.trim();
+                        let emojiMatch = text.match(/[\p{Emoji}]/gu);
+
                         if (emojiMatch) {
                             let emoji = emojiMatch[0]; // First emoji found
                             for (let i = 0; i < 5; i++) { // 5 different explosion locations
@@ -532,10 +535,12 @@ document.addEventListener("visibilitychange", function() {
         });
 
         observer.observe(chatbox, { childList: true, subtree: true });
+
+        console.log("Emoji explosion observer started!");
     }
 
-    // ✅ Automatically apply explosion effect to chat messages
-    window.addEventListener("load", function () {
+    // ✅ Call function when page loads
+    window.addEventListener("DOMContentLoaded", function () {
         addEmojiExplosionToChat("#chatbox", ".msg");
     });
 
