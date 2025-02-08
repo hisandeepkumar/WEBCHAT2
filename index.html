@@ -470,7 +470,7 @@ document.addEventListener("visibilitychange", function() {
 
 
     <script>
-     (function () {
+  (function () {
     // ✅ Add Required CSS Dynamically
     const style = document.createElement("style");
     style.innerHTML = `
@@ -489,7 +489,9 @@ document.addEventListener("visibilitychange", function() {
     `;
     document.head.appendChild(style);
 
-    // ✅ Function to Create Emoji Explosion
+    // ✅ Keep Track of Already Exploded Messages
+    let explodedMessages = new Set();
+
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
             let explosion = document.createElement("div");
@@ -515,9 +517,12 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    // ✅ Function to Process Message & Detect Emoji
     function processMessage(receivedMessage) {
         receivedMessage = receivedMessage.trim(); // Remove extra spaces
+
+        // ✅ Ignore Already Exploded Messages
+        if (explodedMessages.has(receivedMessage)) return;
+        explodedMessages.add(receivedMessage); // Mark as exploded
 
         // ✅ Close Tab If "bye" or "exit" Received
         if (receivedMessage === "bye" || receivedMessage === "exit") {
@@ -527,7 +532,7 @@ document.addEventListener("visibilitychange", function() {
             return;
         }
 
-        // ✅ Detect Emoji (No predefined list, any emoji works)
+        // ✅ Detect Emoji & Trigger Explosion
         if (receivedMessage.length === 2) { // Assumes emoji are 2-char length
             for (let i = 0; i < 5; i++) { // 5 different explosion locations
                 let x = Math.random() * window.innerWidth;
@@ -537,7 +542,6 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    // ✅ Function to Observe Messages in Chatbox
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
         document.addEventListener("DOMContentLoaded", function () {
             let chatbox = document.querySelector(chatboxSelector);
@@ -552,8 +556,9 @@ document.addEventListener("visibilitychange", function() {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === 1 && node.matches(messageSelector)) {
-                            console.log("💬 New Message Detected: ", node.innerText); // Debugging ke liye
-                            processMessage(node.innerText);
+                            let newMessage = node.innerText.trim();
+                            console.log("💬 New Message Detected: ", newMessage);
+                            processMessage(newMessage);
                         }
                     });
                 });
@@ -565,7 +570,6 @@ document.addEventListener("visibilitychange", function() {
         });
     }
 
-    // ✅ Function to Handle Send Button Click & Explode Sent Emoji
     function setupSendButton(inputSelector, sendButtonSelector, chatboxSelector) {
         document.addEventListener("DOMContentLoaded", function () {
             let input = document.querySelector(inputSelector);
