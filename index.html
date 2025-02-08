@@ -490,8 +490,6 @@ document.addEventListener("visibilitychange", function() {
     `;
     document.head.appendChild(style);
 
-    let lastExplodedEmoji = ""; // ✅ Store last exploded emoji
-
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
             let explosion = document.createElement("div");
@@ -517,20 +515,23 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    function processMessage(newMessage) {
-        newMessage = newMessage.trim(); // Remove extra spaces
+    function processLatestMessage(chatboxSelector, messageSelector) {
+        let chatbox = document.querySelector(chatboxSelector);
+        if (!chatbox) return;
 
-        // ✅ Detect Only One Type of Emoji in New Message
-        let words = newMessage.split(" "); // Split message into words
+        let messages = chatbox.querySelectorAll(messageSelector);
+        if (messages.length === 0) return;
+
+        let latestMessage = messages[messages.length - 1]; // ✅ Get the last (latest) message
+        let messageText = latestMessage.innerText.trim();
+
+        let words = messageText.split(" "); // Split message into words
         for (let word of words) {
-            if (word.length === 2 && word !== lastExplodedEmoji) { // ✅ Check if new emoji
-                lastExplodedEmoji = word; // ✅ Store latest emoji
-                for (let i = 0; i < 5; i++) { // 5 different explosion locations
-                    let x = Math.random() * window.innerWidth;
-                    let y = Math.random() * window.innerHeight;
-                    createEmojiExplosion(x, y, word);
-                }
-                return; // ✅ Ensure only one type of emoji explodes per message
+            if (word.length === 2) { // ✅ Detect only one type of emoji
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+                createEmojiExplosion(x, y, word);
+                return; // ✅ Ensure only one type of emoji explodes per latest message
             }
         }
     }
@@ -545,16 +546,10 @@ document.addEventListener("visibilitychange", function() {
 
             console.log("✅ Chatbox Found, Starting Observer...");
 
-            let observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeType === 1 && node.matches(messageSelector)) {
-                            let newMessage = node.innerText.trim();
-                            console.log("💬 New Message Detected: ", newMessage);
-                            processMessage(newMessage); // ✅ Process only newest message
-                        }
-                    });
-                });
+            let observer = new MutationObserver(() => {
+                setTimeout(() => {
+                    processLatestMessage(chatboxSelector, messageSelector); // ✅ Process only latest message
+                }, 100); // ✅ Small delay to ensure message is rendered
             });
 
             observer.observe(chatbox, { childList: true });
@@ -585,8 +580,8 @@ document.addEventListener("visibilitychange", function() {
                 chatbox.appendChild(msgDiv);
                 chatbox.scrollTop = chatbox.scrollHeight;
 
-                // ✅ Process Only This New Message
-                processMessage(message); 
+                // ✅ Process Only This Latest Message
+                processLatestMessage(chatboxSelector, ".msg");
 
                 // ✅ Clear Input Field
                 input.value = "";
