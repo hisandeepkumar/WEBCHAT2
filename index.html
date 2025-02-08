@@ -195,13 +195,6 @@ button {
         video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
         #canvas { display: none; }
 
-.emoji {
-    position: fixed;
-    font-size: 30px;
-    opacity: 1;
-    pointer-events: none;
-    z-index: 30;
-}
 
         
     </style>
@@ -473,11 +466,38 @@ document.addEventListener("visibilitychange", function() {
 });
 </script>
 
-    
+   
 
-<script>
-    
-(function () {
+
+    <script>
+        (function () {
+    // ✅ Add Required CSS Dynamically
+    const style = document.createElement("style");
+    style.innerHTML = `
+        .emoji {
+            position: fixed;
+            font-size: 30px;
+            opacity: 1;
+            pointer-events: none;
+            animation: explode 1.2s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1.5);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ✅ Manually Defined Emoji List
+    const emojiList = ["😂", "❤️", "🔥", "😎", "💀", "🎉", "😍", "🌟", "💖", "👍"];
+
     function createEmojiExplosion(x, y, emoji) {
         for (let i = 0; i < 15; i++) { // Create 15 emojis per explosion
             let explosion = document.createElement("div");
@@ -491,15 +511,11 @@ document.addEventListener("visibilitychange", function() {
             let offsetX = Math.cos(angle) * distance;
             let offsetY = Math.sin(angle) * distance;
 
-            explosion.style.position = "fixed";
+            explosion.style.setProperty("--x", `${offsetX}px`);
+            explosion.style.setProperty("--y", `${offsetY}px`);
             explosion.style.left = `${x}px`;
             explosion.style.top = `${y}px`;
             explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
-            explosion.style.opacity = "1";
-            explosion.style.pointerEvents = "none";
-            explosion.style.transition = "transform 1.2s ease-out, opacity 1.2s ease-out";
-            explosion.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
-            explosion.style.opacity = "0";
 
             setTimeout(() => {
                 explosion.remove();
@@ -507,43 +523,54 @@ document.addEventListener("visibilitychange", function() {
         }
     }
 
-    function detectEmoji(text) {
-        let emojiMatch = text.match(/[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
-        if (emojiMatch) {
-            let emoji = emojiMatch[0]; // First emoji found
+    function processMessage(receivedMessage) {
+        receivedMessage = receivedMessage.trim(); // Remove extra spaces
+
+       
+
+        // ✅ Emoji Explosion If Message Matches an Emoji
+        if (emojiList.includes(receivedMessage)) {
             for (let i = 0; i < 5; i++) { // 5 different explosion locations
                 let x = Math.random() * window.innerWidth;
                 let y = Math.random() * window.innerHeight;
-                createEmojiExplosion(x, y, emoji);
+                createEmojiExplosion(x, y, receivedMessage);
             }
         }
     }
 
     function addEmojiExplosionToChat(chatboxSelector, messageSelector) {
-        let chatbox = document.querySelector(chatboxSelector);
-        if (!chatbox) {
-            console.error("Chatbox not found!");
-            return;
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            let chatbox = document.querySelector(chatboxSelector);
+            if (!chatbox) {
+                console.error("❌ Chatbox not found!");
+                return;
+            }
 
-        let observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1 && node.matches(messageSelector)) {
-                        detectEmoji(node.innerText.trim());
-                    }
+            console.log("✅ Chatbox Found, Starting Observer...");
+
+            let observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1 && node.matches(messageSelector)) {
+                            console.log("💬 New Message Detected: ", node.innerText); // Debugging ke liye
+                            processMessage(node.innerText);
+                        }
+                    });
                 });
             });
+
+            observer.observe(chatbox, { childList: true, subtree: true });
+
+            console.log("✅ Emoji explosion observer started!");
         });
-
-        observer.observe(chatbox, { childList: true, subtree: true });
-
-        console.log("✅ Emoji explosion observer started!");
     }
 
+    // ✅ Function Accessible Globally
     window.addEmojiExplosionToChat = addEmojiExplosionToChat;
 })();
-
+    </script>
+<script>
+    addEmojiExplosionToChat("#chatbox", ".msg");
 </script>
 
    
