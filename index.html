@@ -480,41 +480,44 @@ document.addEventListener("visibilitychange", function() {
             opacity: 1;
             z-index: 30;
             pointer-events: none;
-            animation: explode 1.2s ease-out forwards;
+            animation: explode 1.5s ease-out forwards;
         }
         
         @keyframes explode {
             0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
+            50% { transform: translate(var(--x), var(--y)) scale(1.8); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
         }
     `;
     document.head.appendChild(style);
 
     function createEmojiExplosion(emoji) {
-        for (let i = 0; i < 15; i++) { // ✅ Explosion at 15 random locations
+        for (let i = 0; i < 5; i++) { // ✅ 5 firecracker explosions at different locations
             let x = Math.random() * window.innerWidth;
-            let y = Math.random() * window.innerHeight;
+            let y = Math.random() * (window.innerHeight / 2); // ✅ Firecracker effect in upper screen
 
-            let explosion = document.createElement("div");
-            explosion.innerHTML = emoji;
-            explosion.classList.add("emoji");
-            document.body.appendChild(explosion);
+            for (let j = 0; j < 12; j++) { // ✅ Each explosion creates 12 scattered emojis
+                let explosion = document.createElement("div");
+                explosion.innerHTML = emoji;
+                explosion.classList.add("emoji");
+                document.body.appendChild(explosion);
 
-            let angle = Math.random() * 2 * Math.PI; // Random direction
-            let distance = Math.random() * 200 + 50; // Random explosion radius
+                let angle = (Math.PI * 2 * j) / 12; // Spread explosion in a circular way
+                let distance = Math.random() * 100 + 50; // Random explosion radius
 
-            let offsetX = Math.cos(angle) * distance;
-            let offsetY = Math.sin(angle) * distance;
+                let offsetX = Math.cos(angle) * distance;
+                let offsetY = Math.sin(angle) * distance;
 
-            explosion.style.setProperty("--x", `${offsetX}px`);
-            explosion.style.setProperty("--y", `${offsetY}px`);
-            explosion.style.left = `${x}px`;
-            explosion.style.top = `${y}px`;
-            explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
+                explosion.style.setProperty("--x", `${offsetX}px`);
+                explosion.style.setProperty("--y", `${offsetY}px`);
+                explosion.style.left = `${x}px`;
+                explosion.style.top = `${y}px`;
+                explosion.style.fontSize = `${Math.random() * 20 + 20}px`; // Random size
 
-            setTimeout(() => {
-                explosion.remove();
-            }, 1200);
+                setTimeout(() => {
+                    explosion.remove();
+                }, 1500);
+            }
         }
     }
 
@@ -531,7 +534,7 @@ document.addEventListener("visibilitychange", function() {
         let words = messageText.split(" "); // Split message into words
         for (let word of words) {
             if (word.length === 2) { // ✅ Detect only one type of emoji
-                createEmojiExplosion(word); // ✅ Multi-location explosion
+                createEmojiExplosion(word); // ✅ Firecracker explosion
                 return; // ✅ Ensure only one type of emoji explodes per latest message
             }
         }
