@@ -133,10 +133,9 @@ button {
 
 .button-container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center; /* Centering the input and buttons */
     align-items: center;
-    width: 90%;
-    margin-top: 10px;
+    width: 100%; /* Full width */
     position: absolute;
     bottom: 30px;
     left: 50%;
@@ -145,12 +144,14 @@ button {
 }
 
 #message {
-    width: 55%;
+    width: 60%; /* Slightly increase width for better alignment */
+    max-width: 400px; /* Limit max width on large screens */
     padding: 12px;
-    border-radius: 25px; /* Rounded corners for message input */
-    border: 2px solid black; /* Black border */
+    border-radius: 25px;
+    border: 2px solid black;
     margin-top: 10px;
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
+    text-align: left;
+    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 5;
 }
 
