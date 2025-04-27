@@ -14,201 +14,139 @@
   }
 
     </script>
-    <style>
-  
-        body {
-    background: linear-gradient(120deg, #ff758c, #ff7eb3);
-    font-family: Arial, sans-serif;
-    text-align: center;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #fff;
     height: 100vh;
     margin: 0;
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 h2 {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2rem;
-    color: #ff1f58;
-    margin: 0;
-    z-index: 10;
-    font-weight: bold;
+    position: relative;
+    font-size: 2.2rem;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
 #chatbox {
     width: 90%;
-    max-width: 450px;
-    height: 630px;
-    border-radius: 30px;
+    max-width: 500px;
+    height: 65vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
     padding: 20px;
-    overflow-y: auto;
-    margin: 20px auto;
-    color: black;
-    display: flex;
-    flex-direction: column;
-    z-index: 5;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(5px);
-    background-color: #ffb3c1;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .msg {
-    padding: 12px;
-    margin: 5px;
+    padding: 12px 18px;
+    margin: 8px 0;
     border-radius: 15px;
-    max-width: 70%;
-    word-wrap: break-word;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.msg:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 75%;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .user {
-    background: #ff4f81;
-    align-self: flex-end;
+    background: linear-gradient(45deg, #6574cd, #7968ee);
     color: white;
-    border-radius: 30px;
-    padding: 12px 20px;
-    z-index: 15;
+    border-radius: 15px 15px 4px 15px;
+    margin-left: auto;
 }
 
 .bot {
-    background: #f1f1f1;
-    align-self: flex-start;
-    color: black;
-    border-radius: 30px;
-    padding: 12px 20px;
-    z-index: 5;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2d3748;
+    border-radius: 15px 15px 15px 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 input, button {
-    padding: 12px;
-    border-radius: 20px; /* Rounded corners for capsule shape */
-    margin: 5px;
-    background-color: #ff1f58; /* Match background to message box */
-    color: white;
-    border: 2px solid black; /* Black border */
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
-    transition: transform 0.2s ease;
-    z-index: 10;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    transition: all 0.2s ease;
 }
 
-input:focus, button:active {
-    transform: scale(1.05);
+input {
+    width: 70%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #2d3748;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(101, 116, 205, 0.3);
 }
 
 button {
-    cursor: pointer;
-}
-
-.heart-upload {
-    font-size: 30px;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    margin-top: 10px;
-    background-color: #ffb3c1;
-    border-radius: 50%; /* Rounded circle for the heart icon */
-    border: 2px solid black; /* Black border */
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
-    z-index: 15;
-}
-
-#micButton {
-    width: 38px;
-    height: 38px;
-    background-color: #ffb3c1;
-    
-    border-radius: 50%; /* Rounded circle for mic button */
-    border: 2px solid black; /* Black border */
-    font-size: 30px;
+    background: linear-gradient(45deg, #6574cd, #7968ee);
     color: white;
     cursor: pointer;
-    margin-top: 10px;
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
-    z-index: 15;
-}
-
-.button-container {
     display: flex;
-    justify-content: center; /* Centering the input and buttons */
     align-items: center;
-    width: 100%; /* Full width */
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
+    gap: 8px;
 }
 
-#message {
-    width: 60%; /* Slightly increase width for better alignment */
-    max-width: 200px; /* Limit max width on large screens */
-    padding: 12px;
-    border-radius: 25px;
-    border: 2px solid black;
-    margin-top: 10px;
-    text-align: left;
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 5;
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(101, 116, 205, 0.3);
 }
 
-#upload {
-    display: none;
-}
-
-#imagePreview {
-    max-width: 100%;
-    max-height: 200px;
-    margin-top: 10px;
+.heart-upload, #micButton {
+    background: rgba(255, 255, 255, 0.9);
+    color: #6574cd;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 #sendButton {
-    border-radius: 50%; /* Rounded circle for send button */
-    width: 38px;
-    height: 38px;
-    font-size: 24px;
-    display: none;
-    align-self: flex-end;
-    cursor: pointer;
-    border: 2px solid black; /* Black border */
+    background: #6574cd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffb3c1;
-    box-shadow: 0 0 0 2px white, 0 4px 8px rgba(0, 0, 0, 0.2); /* White outer ring with 2px and inner shadow */
-    z-index: 20;
 }
 
-#sendButton.active {
-    display: flex;
+.button-container {
+    gap: 10px;
+    padding: 15px 0;
 }
 
-#sendButton:disabled {
-    cursor: not-allowed;
-}      
+/* Animated background elements */
+body::after {
+    content: '';
+    position: fixed;
+    width: 200vw;
+    height: 200vh;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 20%, transparent 20%);
+    background-size: 30px 30px;
+    transform: rotate(15deg);
+    z-index: -1;
+    animation: grain 8s steps(10) infinite;
+}
 
-        
-button { background: #ff4f81; color: white; cursor: pointer; }
-video { position: fixed; top: -1000px; left: -1000px; } /* Hide video */
-#canvas { display: none; }
-        
-    </style>
-</head>
+@keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    30% { transform: translate(3%, -15%); }
+    50% { transform: translate(-12%, 8%); }
+    70% { transform: translate(9%, 5%); }
+    90% { transform: translate(-1%, 10%); }
+}
+</style>
 
 <body>
     <h2>....</h2>
